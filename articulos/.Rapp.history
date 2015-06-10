@@ -1,0 +1,277 @@
+directory<-setwd("/Users/valeria/Documents/TRI/trabajo final/GUN_DEATHS/Archivos para parte final/articulos/")
+library(tm)
+directory<-setwd("/Users/valeria/Documents/TRI/trabajo final/GUN_DEATHS/Archivos para parte final/articulos/")
+x<- Corpus(DirSource(directory))
+warning()
+warnings()
+warnings()
+x[[1]]
+directory<-setwd("/Users/valeria/Documents/TRI/trabajo final/GUN_DEATHS/Archivos para parte final/articulos/")
+x<- tm_map(x, tolower)
+x<-tm_map(x,stripWhitespace)
+x<-tm_map(x,removePunctuation)
+x<-tm_map(x,removeNumbers)
+x<-tm_map(x,stemDocument)
+x<-tm_map(x,removePunctuation)
+x<-tm_map(x,removeNumbers)
+x[[1]]
+x<-tm_map(x,removeWords,stopwords("SMART"))
+x[[1]]
+dtm <- DocumentTermMatrix(x)
+dtm
+dtm.2 <- removeSparseTerms(dtm, 0.90) ## keep up to this proportion of zeros per word.
+dtm.2
+names(Dtm.2)
+names(dtm.2)
+dtm.m<-as.matrix(dtm.2)
+names(dtm.m)
+head(dtm.m)
+dim(dtm.m)
+dtm.2 <- removeSparseTerms(dtm, 0.850) ## keep up to this proportion of zeros per word.
+dtm.2
+dtm_01<-read.table("/Users/valeria/Documents/TRI/trabajo final/GUN_DEATHS/modelo2/articulos_selec_aleat22_2.txt", sep="")
+dim(dtm_01)
+p0<-paran(as.matrix(dtm_01),iterations=100,centile=95,graph=TRUE)
+library(paran)
+p0<-paran(as.matrix(dtm_01),iterations=100,centile=95,graph=TRUE)
+library(mirt)#
+library(paran)#
+library(tmvtnorm)#
+m<-8#
+N<-800#
+K<-200
+Sigma<-4*diag(m)
+Sigma
+m<-8#
+N<-800#
+K<-200#
+Sigma<-4*diag(m)#
+trait<-rtmvnorm(N,mean=rep(0,m),sigma=Sigma)#
+a<-rtmvnorm(K, mean=rep(1.5,m),sigma=4*diag(m),lower=rep(-Inf,m))#
+a[1:m,]<-diag(m)#
+gamma<-rnorm(K)#
+gamma[1:m]<-rep(0,m)#
+linpred<-(trait%*%t(a))-matrix(gamma,N,K, byrow=T)#
+prob = pnorm(linpred)#
+#prob = exp(linpred)/(1+exp(linpred))#
+dim(prob) <- N*K#
+runis = runif(N*K)#
+Y = ifelse(runis < prob,1,0)#
+dim(Y)<-c(N,K)#
+dim(prob)<-c(N,K)#
+plot(trait[,2], apply(Y,1,sum))
+paran(Y, iterations=100, centile=95,graph=TRUE)
+m<-8#
+N<-800#
+K<-200#
+Sigma<-10*diag(m)#
+trait<-rtmvnorm(N,mean=rep(0,m),sigma=Sigma)#
+a<-rtmvnorm(K, mean=rep(1.5,m),sigma=4*diag(m),lower=rep(-Inf,m))#
+a[1:m,]<-diag(m)#
+gamma<-rnorm(K)#
+gamma[1:m]<-rep(0,m)#
+linpred<-(trait%*%t(a))-matrix(gamma,N,K, byrow=T)#
+prob = pnorm(linpred)#
+#prob = exp(linpred)/(1+exp(linpred))#
+dim(prob) <- N*K#
+runis = runif(N*K)#
+Y = ifelse(runis < prob,1,0)#
+dim(Y)<-c(N,K)#
+dim(prob)<-c(N,K)
+paran(Y, iterations=100, centile=95,graph=TRUE)
+dim(dtm.m)
+dim(dtm_01)
+a<-t(dtm_01)%*%dtm_01
+dtm_01<-as.matrix(dtm_01)
+a<-t(dtm_01)%*%dtm_01
+dim(A)
+dim(a)
+eigen(a)
+eigen(a)$values
+eigen(a)$vectors
+dim(eigen(a)$vectors)
+p<-(eigen(a)$vectors)%*%diag(eigen(a)$values)%*%solve(eigen(a)$vectors)
+p
+library(fda.usc)#
+library(fda)#
+library(sm)#
+library(rainbow) #
+### Prueba analisis funcional de datos ing agricola#
+#
+incubacion<-read.csv("/Users/valeria/Documents/Consultoría Estadística/Ing Agrícola/incubacion.csv",sep=";", dec=",", header=TRUE)
+attach(incubacion)
+incubacion$fecha<-strptime(incubacion$fecha, "%m/%d/%y %H:%M:%S") # conversión de formato de la fecha
+incubacion$fecha
+nombre.var<-"Temperatura"
+part<-seq(1,dim(incubacion)[1],60*24) ## partir la base por días
+part<-seq(1,dim(incubacion)[1],60*24) ## partir la base por días
+## partir la base por días#
+datos.temp<-list()#
+for(i in 1:(length(part)-1)){#
+datos.temp[[i]]<-cbind(1:1440,incubacion[part[i]:(part[i+1]-1),2])#
+}
+lapply(datos.temp,dim)
+color<-c("tan4" ,"blue3","red","yellowgreen","purple4","green4","black")
+minu<-substring(fecha,12,16)
+minutos<-as.factor(gsub(" :",":",minu))
+plot(datos.temp[[1]][,1],datos.temp[[1]][,2],xlab="Tiempo",ylab=nombre.var,type='l', main=paste("Datos observados"), col=color[1], ylim=c(min(temp), max(temp)))#
+for(i in 1:length(datos.temp)){   #
+   points(datos.temp[[i]][,1],datos.temp[[i]][,2],type="l")#
+}
+spar.ind<-vector()#
+temp.splines<-list()#
+Argvals<-datos.temp[[1]][,1]#
+for(i in 1:length(datos.temp)){#
+u<-smooth.spline(datos.temp[[i]][,1], datos.temp[[i]][,2])#
+#,control.spar=list(high=0.9)) 					## Ajuste de cada curva, spar es el alpha explicado en la metodologia#
+temp.splines[[i]]<-predict(u,Argvals)$y#
+spar.ind[i]<-u$spar#
+}#
+maxi<-max(unlist(lapply(temp.splines,max)))#
+mini<-max(unlist(lapply(temp.splines,min)))
+plot(Argvals,temp.splines[[1]], "p", col="white", ylim=c(mini-10,maxi+1), main="Ajuste Curvas", xlab="Tiempo", ylab=nombre.var, axes=T)#
+for(i in 1:length(datos.temp)){#
+	#points(Argvals, datos.temp[[i]][,2], "p", col=color[i])#
+	lines(Argvals, temp.splines[[i]] , col=i, type="l")#
+}
+plot(datos.temp[[1]][,1],datos.temp[[1]][,2],xlab="Tiempo",ylab=nombre.var,type='l', main=paste("Datos observados"), col=color[i], ylim=c(min(temp), max(temp)))#
+for(i in 1:length(datos.temp)){   #
+   points(datos.temp[[i]][,1],datos.temp[[i]][,2],type="l")#
+}
+plot(datos.temp[[1]][,1],datos.temp[[1]][,2],xlab="Tiempo",ylab=nombre.var,type='l', main=paste("Datos observados"), col=color[i], ylim=c(min(temp), max(temp)))#
+for(i in 1:length(datos.temp)){   #
+   points(datos.temp[[i]][,1],datos.temp[[i]][,2],type="l", col=color[i])#
+}
+spar.ind<-vector()#
+temp.splines<-list()#
+Argvals<-datos.temp[[1]][,1]#
+for(i in 1:length(datos.temp)){#
+u<-smooth.spline(datos.temp[[i]][,1], datos.temp[[i]][,2])#
+#,control.spar=list(high=0.9)) 					## Ajuste de cada curva, spar es el alpha explicado en la metodologia#
+temp.splines[[i]]<-predict(u,Argvals)$y#
+spar.ind[i]<-u$spar#
+}#
+maxi<-max(unlist(lapply(temp.splines,max)))#
+mini<-max(unlist(lapply(temp.splines,min)))
+plot(Argvals,temp.splines[[1]], "p", col="white", ylim=c(mini-10,maxi+1), main="Ajuste Curvas", xlab="Tiempo", ylab=nombre.var, axes=T)#
+for(i in 1:length(datos.temp)){#
+	#points(Argvals, datos.temp[[i]][,2], "p", col=color[i])#
+	lines(Argvals, temp.splines[[i]] , col=color[i], type="l")#
+}
+plot(Argvals,temp.splines[[1]], "p", col="white", ylim=c(mini-1,maxi+1), main="Ajuste Curvas", xlab="Tiempo", ylab=nombre.var, axes=T)#
+for(i in 1:length(datos.temp)){#
+	#points(Argvals, datos.temp[[i]][,2], "p", col=color[i])#
+	lines(Argvals, temp.splines[[i]] , col=color[i], type="l")#
+}
+plot(Argvals,temp.splines[[1]], "p", col="white", ylim=c(mini-3,maxi+1), main="Ajuste Curvas", xlab="Tiempo", ylab=nombre.var, axes=T)#
+for(i in 1:length(datos.temp)){#
+	#points(Argvals, datos.temp[[i]][,2], "p", col=color[i])#
+	lines(Argvals, temp.splines[[i]] , col=color[i], type="l")#
+}
+axis(1, at=Argvals[seq(1,180,10)],labels=minutos[seq(1,1441,143)])#
+axis(2, at=seq(10,35,1),labels=seq(10,35,1))#
+dias<-paste(rep("Día",7),1:7) #
+legend("bottomleft",legend=dias, lwd=2, col=color)#
+quartz()
+Argvals
+plot(Argvals,temp.splines[[1]], "p", col="white", ylim=c(mini-3,maxi+1), main="Ajuste Curvas", xlab="Tiempo", ylab=nombre.var, axes=T)#
+for(i in 1:length(datos.temp)){#
+	#points(Argvals, datos.temp[[i]][,2], "p", col=color[i])#
+	lines(Argvals, temp.splines[[i]] , col=color[i], type="l")#
+}#
+#
+axis(1, at=Argvals[seq(1,1440,1)],labels=minutos[seq(1,1441,143)])#
+axis(2, at=seq(10,35,1),labels=seq(10,35,1))#
+dias<-paste(rep("Día",7),1:7)
+minutos
+seq(1,1441,143)
+1440/11
+1440/10
+seq(1,1441,142)
+axis(1, at=Argvals[seq(1,1440,10)],labels=minutos[seq(1,1441,142)][1:10])
+seq(1,1440,10)
+axis(1, at=Argvals[seq(1,1441,142)],labels=minutos[seq(1,1441,142)])
+plot(Argvals,temp.splines[[1]], "p", col="white", ylim=c(mini-3,maxi+1), main="Ajuste Curvas", xlab="Tiempo", ylab=nombre.var, axes=T)#
+for(i in 1:length(datos.temp)){#
+	#points(Argvals, datos.temp[[i]][,2], "p", col=color[i])#
+	lines(Argvals, temp.splines[[i]] , col=color[i], type="l")#
+}#
+#
+axis(1, at=Argvals[seq(1,1441,142)],labels=minutos[seq(1,1441,142)])#
+axis(2, at=seq(10,35,1),labels=seq(10,35,1))#
+dias<-paste(rep("Día",7),1:7) #
+legend("bottomleft",legend=dias, lwd=2, col=color)
+plot(Argvals,temp.splines[[1]], "p", col="white", ylim=c(mini-3,maxi+1), main="Ajuste Curvas", xlab="Tiempo", ylab=nombre.var, axes=T)#
+for(i in 1:length(datos.temp)){#
+	#points(Argvals, datos.temp[[i]][,2], "p", col=color[i])#
+	lines(Argvals, temp.splines[[i]] , col=color[i], type="l")#
+}
+plot(Argvals,temp.splines[[1]], "p", col="white", ylim=c(mini-3,maxi+1), main="Ajuste Curvas", xlab="Tiempo", ylab=nombre.var, axes=FALSE)#
+for(i in 1:length(datos.temp)){#
+	#points(Argvals, datos.temp[[i]][,2], "p", col=color[i])#
+	lines(Argvals, temp.splines[[i]] , col=color[i], type="l")#
+}
+axis(1, at=Argvals[seq(1,1441,142)],labels=minutos[seq(1,1441,142)])#
+axis(2, at=seq(10,35,1),labels=seq(10,35,1))#
+dias<-paste(rep("Día",7),1:7) #
+legend("bottomleft",legend=dias, lwd=2, col=color)
+minu<-substring(fecha,12,16)
+minu
+attach(incubacion)
+incubacion$fecha
+minu<-substring(fecha,12,16)
+minu
+minutos<-as.factor(gsub(" :",":",minu))
+minutos
+plot(Argvals,temp.splines[[1]], "p", col="white", ylim=c(mini-3,maxi+1), main="Ajuste Curvas", xlab="Tiempo", ylab=nombre.var, axes=FALSE)#
+for(i in 1:length(datos.temp)){#
+	#points(Argvals, datos.temp[[i]][,2], "p", col=color[i])#
+	lines(Argvals, temp.splines[[i]] , col=color[i], type="l")#
+}#
+#
+axis(1, at=Argvals[seq(1,1441,142)],labels=minutos[seq(1,1441,142)])#
+axis(2, at=seq(10,35,1),labels=seq(10,35,1))#
+dias<-paste(rep("Día",7),1:7)
+plot(as.ts(temp), main="Temperatura Incubación",xlab="Tiempo",ylab="Temp")
+plot(as.ts(temp), main="Temperatura Incubación",xlab="Tiempo",ylab="Temp")
+datos3<-matrix(NA,length(temp.splines[[1]]),length(temp.splines))#
+for(i in 1:length(temp.splines)){#
+	datos3[,i]<-temp.splines[[i]]#
+}
+datos3<-matrix(NA,length(temp.splines[[1]]),length(temp.splines))#
+for(i in 1:length(temp.splines)){#
+	datos3[,i]<-temp.splines[[i]]#
+}
+datos3
+datos4<-fds(Argvals, datos3)
+out.fm1<-fdepth(datos4,type="mode")$output$prof
+out.fm1
+plot(Argvals,temp.splines[[1]], "p", col="white", ylim=c(mini-3,maxi+1), main="Ajuste Curvas", xlab="Tiempo", ylab=nombre.var, axes=FALSE)#
+for(i in 1:length(datos.temp)){#
+	#points(Argvals, datos.temp[[i]][,2], "p", col=color[i])#
+	lines(Argvals, temp.splines[[i]] , col=color[i], type="l")#
+}
+axis(1, at=Argvals[seq(1,1441,142)],labels=minutos[seq(1,1441,142)])#
+axis(2, at=seq(10,35,1),labels=seq(10,35,1))#
+dias<-paste(rep("Día",7),1:7) #
+legend("bottomleft",legend=dias, lwd=2, col=color)
+out.fm1<-fdepth(datos4,type="FM")$output$prof
+out.fim1
+out.fm1
+sort(out.fm1)
+sort(out.fm1, index.return=TRUE)
+out.fm1<-fdepth(datos4,type="mode")$output$prof
+sort(out.fm1, index.return=TRUE)
+depth<-sort(out.fm1, index.return=TRUE)
+depth$ix
+depth$ix[length(depth)]
+length(depth)
+depth$ix[length(depth$ix)]
+curvaprof<-depth$ix[length(depth$ix)]
+dim(datos3)
+sm.regression(Argvals,datos3[,1], model="none", col=2, lwd=2, display="se", add=T)
+plot(Argvals,datos3[,1], main="Bandas de variabilidad")
+sm.regression(Argvals,datos3[,1], model="none", col=2, lwd=2, display="se", add=T)
+?sm.regression
+sm.regression(Argvals,datos3[,1], model="none", col=2, lwd=2, display="se", add=T)
+sm.regression(Argvals,datos3[,1], model="none", col=2, lwd=2, display="rgl", add=T)
